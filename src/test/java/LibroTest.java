@@ -142,15 +142,29 @@ public class LibroTest {
     public void testLoad() throws ExcelAPIException {
         System.out.println("load");
         try {
-            FileInputStream ficheroEntrada = new FileInputStream("22.xlsx");
+            FileInputStream ficheroEntrada = new FileInputStream("test.xlsx");
             try {
                 XSSFWorkbook libro = new XSSFWorkbook(ficheroEntrada);
                 Libro prueba = new Libro();
+                int contador;// contara las celdas de cada fila
+                int mayor;// guardara el número de celdas de la fila que más celdas tenga
                 // recorre por cada hoja
                 for (int i = 0; i < libro.getNumberOfSheets(); i++) {
                     // obtenemos la hoja
                     Sheet hoja = libro.getSheetAt(i);
-                    Hoja miHoja = new Hoja(hoja.getSheetName(), hoja.getLastRowNum() + 1, hoja.getLastRowNum() + 1);
+                    contador = 0;
+                    mayor = 0;
+                    //recorremos las filas
+                    for (Row fila : hoja) { 
+                        contador = 0;// cada fila empieza por 0 celdas
+                        for (Cell cell : fila) {
+                            contador++;// se incrementa por celda que haya
+                        }
+                        if (contador > mayor) {//comprobamos con en numero de celdas de la fila anterior y se guarda el mas alto.
+                            mayor = contador;
+                        }
+                    }
+                    Hoja miHoja = new Hoja(hoja.getSheetName(), hoja.getLastRowNum() + 1, mayor);
                     // Crea las filas
                     for (int j = 0; j < hoja.getLastRowNum()+1; j++) {
                         Row fila = hoja.createRow(j);
@@ -158,7 +172,7 @@ public class LibroTest {
                             break;
                         }
                         // Crea las celdas y las rellena según su tipo        
-                        for (int k = 0; k < hoja.getLastRowNum()+1; k++) {
+                        for (int k = 0; k < mayor; k++) {
                             Cell celda = fila.createCell(k);
                             switch (celda.getCellTypeEnum()) {
                                 case BLANK:

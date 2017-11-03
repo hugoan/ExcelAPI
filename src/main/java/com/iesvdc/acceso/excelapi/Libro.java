@@ -119,7 +119,8 @@ public class Libro {
      * el archivo y si hay error en la entrada y salida del XSSFWorkbook.
      */
     public void load(String archivo) throws ExcelAPIException {
-        //System.out.println("estoy dentro de load");
+        int contador;
+        int mayor;
         FileInputStream ficheroEntrada;
         try {
             ficheroEntrada = new FileInputStream(archivo);
@@ -136,10 +137,22 @@ public class Libro {
         for (int i = 0; i < libro.getNumberOfSheets(); i++) {
             // obtenemos la hoja
             //System.out.println("estoy dentro de for de hojas"+ libro.getNumberOfSheets());
-            Sheet hoja = libro.getSheetAt(i);           
-            Hoja miHoja = new Hoja(hoja.getSheetName(), hoja.getLastRowNum()+1, hoja.getLastRowNum()+1);
+            Sheet hoja = libro.getSheetAt(i);
+            contador = 0;
+            mayor = 0;
+            //recorremos las filas
+            for (Row fila : hoja) {
+                contador = 0;// cada fila empieza por 0 celdas
+                for (Cell cell : fila) {
+                    contador++;// se incrementa por celda que haya
+                }
+                if (contador > mayor) {//comprobamos con en numero de celdas de la fila anterior y se guarda el mas alto.
+                    mayor = contador;
+                }
+            }
+            Hoja miHoja = new Hoja(hoja.getSheetName(), hoja.getLastRowNum() + 1, mayor);
             // Crea las filas
-            for (int j = 0; j < hoja.getLastRowNum()+1; j++) {
+            for (int j = 0; j < hoja.getLastRowNum() + 1; j++) {
                 //System.out.println("Estoy dentro del for de filas" + hoja.getLastRowNum());
                 Row fila = hoja.createRow(j);
                 if (fila == null) {
@@ -147,7 +160,7 @@ public class Libro {
                 }
                 //System.out.println(fila.getLastCellNum());
                 // Crea las celdas y las rellena según su tipo                
-                for (int k = 0; k < hoja.getLastRowNum()+1; k++) {// ------ hay un bug en gestLastCellNum y también en cellIterator ---- por eso uso el mismo que en las filas, esto fallaría si no le pasamos un excel cuadrado (Con las mismo numero de filas que de columans)
+                for (int k = 0; k < mayor; k++) {// ------ hay un bug en gestLastCellNum y también en cellIterator ---- por eso uso el mismo que en las filas, esto fallaría si no le pasamos un excel cuadrado (Con las mismo numero de filas que de columans)
                     //System.out.println("estoy dentro del for de celdas");
                     Cell celda = fila.createCell(k);
                     if (celda == null) {
@@ -179,7 +192,7 @@ public class Libro {
                 }
             }
             this.addHoja(miHoja);
-        }      
+        }
     }
 
     /**
@@ -254,4 +267,3 @@ try (FileOutputStream out = new FileOutputStream(this.nombreArchivo + ".xsl")){
         }
  
  */
-
