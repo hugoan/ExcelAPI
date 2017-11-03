@@ -133,7 +133,6 @@ public class LibroTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    } 
-    
     /**
      * Test of load method, of class Libro.
      *
@@ -143,47 +142,52 @@ public class LibroTest {
     public void testLoad() throws ExcelAPIException {
         System.out.println("load");
         try {
-            FileInputStream ficheroEntrada = new FileInputStream("test.xlsx");
+            FileInputStream ficheroEntrada = new FileInputStream("22.xlsx");
             try {
                 XSSFWorkbook libro = new XSSFWorkbook(ficheroEntrada);
+                Libro prueba = new Libro();
                 // recorre por cada hoja
                 for (int i = 0; i < libro.getNumberOfSheets(); i++) {
                     // obtenemos la hoja
                     Sheet hoja = libro.getSheetAt(i);
+                    Hoja miHoja = new Hoja(hoja.getSheetName(), hoja.getLastRowNum() + 1, hoja.getLastRowNum() + 1);
                     // Crea las filas
-                    for (int j = 0; j < hoja.getLastRowNum(); j++) {
+                    for (int j = 0; j < hoja.getLastRowNum()+1; j++) {
                         Row fila = hoja.createRow(j);
                         if (fila == null) {
                             break;
                         }
                         // Crea las celdas y las rellena según su tipo        
-                        for (int k = 0; k < fila.getLastCellNum(); k++) {
-                            Cell celda = fila.getCell(k);
+                        for (int k = 0; k < hoja.getLastRowNum()+1; k++) {
+                            Cell celda = fila.createCell(k);
                             switch (celda.getCellTypeEnum()) {
                                 case BLANK:
-                                    System.out.println(celda.getAddress());
+                                    miHoja.setDato(celda.getAddress().toString(), j, k);
                                     break;
                                 case BOOLEAN:
-                                    System.out.println(celda.getBooleanCellValue());
+                                    miHoja.setDato(String.valueOf(celda.getBooleanCellValue()), j, k);
                                     break;
                                 case ERROR:
-                                    System.out.println(celda.getErrorCellValue());
+                                    miHoja.setDato(String.valueOf(celda.getErrorCellValue()), j, k);
                                     break;
                                 case FORMULA:
-                                    System.out.println(celda.getCellFormula());
+                                    miHoja.setDato(String.valueOf(celda.getCellFormula()), j, k);
                                     break;
                                 case NUMERIC:
-                                    System.out.println(celda.getNumericCellValue());
+                                    miHoja.setDato(String.valueOf(celda.getNumericCellValue()), j, k);
                                     break;
                                 case STRING:
-                                    System.out.println(celda.getStringCellValue());
+                                    miHoja.setDato(celda.getStringCellValue(), j, k);
                                     break;
                                 default:
+                                    miHoja.setDato("estoy en el default", j, k);
                                     break;
                             }
                         }
                     }
+                prueba.addHoja(miHoja);
                 }
+                prueba.save();
             } catch (IOException ex) {
                 throw new ExcelAPIException("Libro()::load(): Error al crear XSSFWorkbook.");
             }
@@ -196,7 +200,7 @@ public class LibroTest {
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }
-    
+
     /**
      * Test of save method, of class Libro.
      *

@@ -118,7 +118,7 @@ public class Libro {
      * @throws com.iesvdc.acceso.excelapi.ExcelAPIException Controla que exista
      * el archivo y si hay error en la entrada y salida del XSSFWorkbook.
      */
-    public XSSFWorkbook load(String archivo) throws ExcelAPIException {
+    public void load(String archivo) throws ExcelAPIException {
         //System.out.println("estoy dentro de load");
         FileInputStream ficheroEntrada;
         try {
@@ -136,7 +136,8 @@ public class Libro {
         for (int i = 0; i < libro.getNumberOfSheets(); i++) {
             // obtenemos la hoja
             //System.out.println("estoy dentro de for de hojas"+ libro.getNumberOfSheets());
-            Sheet hoja = libro.getSheetAt(i);
+            Sheet hoja = libro.getSheetAt(i);           
+            Hoja miHoja = new Hoja(hoja.getSheetName(), hoja.getLastRowNum()+1, hoja.getLastRowNum()+1);
             // Crea las filas
             for (int j = 0; j < hoja.getLastRowNum()+1; j++) {
                 //System.out.println("Estoy dentro del for de filas" + hoja.getLastRowNum());
@@ -154,31 +155,31 @@ public class Libro {
                     }
                     switch (celda.getCellType()) {
                         case Cell.CELL_TYPE_BLANK:
-                            System.out.println(celda.getAddress());                          
+                            miHoja.setDato(celda.getAddress().toString(), j, k);
                             break;
                         case Cell.CELL_TYPE_BOOLEAN:
-                            System.out.println(celda.getBooleanCellValue());
+                            miHoja.setDato(String.valueOf(celda.getBooleanCellValue()), j, k);
                             break;
                         case Cell.CELL_TYPE_ERROR:
-                            System.out.println(celda.getErrorCellValue());
+                            miHoja.setDato(String.valueOf(celda.getErrorCellValue()), j, k);
                             break;
                         case Cell.CELL_TYPE_FORMULA:
-                            System.out.println(celda.getCellFormula());
+                            miHoja.setDato(String.valueOf(celda.getCellFormula()), j, k);
                             break;
                         case Cell.CELL_TYPE_NUMERIC:
-                            System.out.println(celda.getNumericCellValue());
+                            miHoja.setDato(String.valueOf(celda.getNumericCellValue()), j, k);
                             break;
                         case Cell.CELL_TYPE_STRING:
-                            System.out.println(celda.getStringCellValue());
+                            miHoja.setDato(celda.getStringCellValue(), j, k);
                             break;
                         default:
-                            System.out.println("estoy en el default");
+                            miHoja.setDato("estoy en el default", j, k);
                             break;
                     }
                 }
             }
-        }
-        return libro;
+            this.addHoja(miHoja);
+        }      
     }
 
     /**
