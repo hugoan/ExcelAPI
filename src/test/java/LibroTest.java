@@ -145,6 +145,7 @@ public class LibroTest {
             FileInputStream ficheroEntrada = new FileInputStream("test.xlsx");
             try {
                 XSSFWorkbook libro = new XSSFWorkbook(ficheroEntrada);
+                ficheroEntrada.close();
                 Libro prueba = new Libro();
                 int contador;// contara las celdas de cada fila
                 int mayor;// guardara el número de celdas de la fila que más celdas tenga
@@ -155,7 +156,7 @@ public class LibroTest {
                     contador = 0;
                     mayor = 0;
                     //recorremos las filas
-                    for (Row fila : hoja) { 
+                    for (Row fila : hoja) {
                         contador = 0;// cada fila empieza por 0 celdas
                         for (Cell cell : fila) {
                             contador++;// se incrementa por celda que haya
@@ -166,7 +167,7 @@ public class LibroTest {
                     }
                     Hoja miHoja = new Hoja(hoja.getSheetName(), hoja.getLastRowNum() + 1, mayor);
                     // Crea las filas
-                    for (int j = 0; j < hoja.getLastRowNum()+1; j++) {
+                    for (int j = 0; j < hoja.getLastRowNum() + 1; j++) {
                         Row fila = hoja.createRow(j);
                         if (fila == null) {
                             break;
@@ -199,9 +200,9 @@ public class LibroTest {
                             }
                         }
                     }
-                prueba.addHoja(miHoja);
+                    prueba.addHoja(miHoja);
                 }
-                prueba.save();
+                prueba.save();                
             } catch (IOException ex) {
                 throw new ExcelAPIException("Libro()::load(): Error al crear XSSFWorkbook.");
             }
